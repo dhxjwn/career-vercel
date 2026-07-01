@@ -583,6 +583,79 @@ export default function MapPage() {
     setCompletingTaskTitle(null);
   }
 }
+
+async function handleSendChat() {
+  if (!studentId || !selectedJob?.job_name) {
+    return;
+  }
+
+  const message = chatInput.trim();
+
+  if (!message) {
+    return;
+  }
+
+  const currentStudentId = studentId;
+  const currentJobName = selectedJob.job_name;
+
+  setChatLoading(true);
+
+  const optimisticHistory: ChatMessage[] = [
+    ...chatHistory,
+    {
+      role: "user",
+      content: message,
+    },
+  ];
+
+  setChatHistory(optimisticHistory);
+  setChatInput("");
+
+  try {
+    const res = await fetch("/api/job-chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: currentStudentId,
+        job_name: currentJobName,
+        message,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      setChatHistory([
+        ...optimisticHistory,
+        {
+          role: "assistant",
+          content: data.message || "職涯聊天失敗，請稍後再試。",
+        },
+      ]);
+      return;
+    }
+
+    setChatHistory(data.history || [
+      ...optimisticHistory,
+      {
+        role: "assistant",
+        content: data.reply || "AI 已回覆，但沒有取得內容。",
+      },
+    ]);
+  } catch {
+    setChatHistory([
+      ...optimisticHistory,
+      {
+        role: "assistant",
+        content: "系統發生錯誤，無法送出聊天。",
+      },
+    ]);
+  } finally {
+    setChatLoading(false);
+  }
+}
   function handleLogout() {
     localStorage.removeItem("student_id");
     window.location.href = "/login";
@@ -745,6 +818,14 @@ export default function MapPage() {
                     />
                   </div>
                 </section>
+                <JobChatSection
+  jobName={selectedJob.job_name}
+  chatHistory={chatHistory}
+  chatInput={chatInput}
+  setChatInput={setChatInput}
+  chatLoading={chatLoading}
+  onSend={handleSendChat}
+/>
               </div>
             )}
           </>
