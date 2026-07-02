@@ -60,7 +60,7 @@ export default function HomePage() {
             </p>
 
             <button
-              onClick={() => alert("下一步會開始做三關卡聊天畫面")}
+              onClick={() => (window.location.href = "/chat")}
               className="mt-5 w-full rounded-2xl bg-orange-500 py-3 font-black text-white shadow-sm"
             >
               開始職涯探索
