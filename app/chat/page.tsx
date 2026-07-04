@@ -52,6 +52,8 @@ export default function ChatPage() {
 
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisMessage, setAnalysisMessage] = useState("");
+  const [analysisText, setAnalysisText] = useState("");
+  const [analysisJobs, setAnalysisJobs] = useState<string[]>([]);
 
   const currentTopicInfo = useMemo(() => {
     return TOPICS.find((item) => item.id === currentTopic) || TOPICS[0];
@@ -211,8 +213,11 @@ export default function ChatPage() {
     }
 
     setAnalysisMessage(
-      `✅ ${data.message} 推薦職業：${(data.jobs || []).join("、")}`
-    );
+  `✅ ${data.message} 推薦職業：${(data.jobs || []).join("、")}`
+);
+
+setAnalysisText(data.analysis_text || "");
+setAnalysisJobs(data.jobs || []);
   } catch {
     setAnalysisMessage("系統發生錯誤，無法產生整體分析。");
   } finally {
@@ -362,6 +367,27 @@ export default function ChatPage() {
         {analysisMessage}
       </div>
     )}
+
+    {analysisJobs.length > 0 && (
+  <div className="mt-4 rounded-2xl bg-orange-50 px-4 py-3 text-sm leading-7 text-orange-800">
+    <div className="font-black">推薦三個職業</div>
+    <ol className="mt-2 list-inside list-decimal">
+      {analysisJobs.map((job) => (
+        <li key={job}>{job}</li>
+      ))}
+    </ol>
+  </div>
+)}
+
+{analysisText && (
+  <div className="mt-4 rounded-2xl bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700">
+    <div className="mb-3 text-base font-black text-slate-900">
+      AI 整體職涯分析
+    </div>
+
+    <div className="whitespace-pre-wrap">{analysisText}</div>
+  </div>
+)}
 
     <div className="mt-5 flex flex-wrap gap-3">
       <button
