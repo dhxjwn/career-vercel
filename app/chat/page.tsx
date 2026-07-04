@@ -50,6 +50,9 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisMessage, setAnalysisMessage] = useState("");
+
   const currentTopicInfo = useMemo(() => {
     return TOPICS.find((item) => item.id === currentTopic) || TOPICS[0];
   }, [currentTopic]);
@@ -179,6 +182,43 @@ export default function ChatPage() {
     setInput("");
     setMessage("");
   }
+
+  async function handleGenerateAnalysis() {
+  if (!studentId) {
+    setAnalysisMessage("請先登入。");
+    return;
+  }
+
+  setAnalyzing(true);
+  setAnalysisMessage("正在產生整體職涯分析與三個推薦職業，請稍候...");
+
+  try {
+    const res = await fetch("/api/project-analysis", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: studentId,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      setAnalysisMessage(data.message || "產生整體分析失敗。");
+      return;
+    }
+
+    setAnalysisMessage(
+      `✅ ${data.message} 推薦職業：${(data.jobs || []).join("、")}`
+    );
+  } catch {
+    setAnalysisMessage("系統發生錯誤，無法產生整體分析。");
+  } finally {
+    setAnalyzing(false);
+  }
+}
 
   const allDone =
     progress.topic1_percent >= 100 &&
@@ -310,20 +350,37 @@ export default function ChatPage() {
         </section>
 
         {allDone && (
-          <section className="rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-black">🎉 三個關卡已完成</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
-              目前可以先查看既有角色報告地圖。下一步會加入「重新產生整體分析與三個推薦職業」功能。
-            </p>
+  <section className="rounded-3xl bg-white p-6 shadow-sm">
+    <h2 className="text-xl font-black">🎉 三個關卡已完成</h2>
 
-            <button
-              onClick={() => (window.location.href = "/map")}
-              className="mt-4 rounded-2xl bg-slate-900 px-5 py-3 font-black text-white"
-            >
-              前往角色報告地圖
-            </button>
-          </section>
-        )}
+    <p className="mt-3 text-sm leading-7 text-slate-600">
+      你已完成自我探索、技能探索、職涯探索。現在可以產生整體職涯分析，系統會重新整理三個推薦職業、能力值、任務清單，並更新角色報告地圖。
+    </p>
+
+    {analysisMessage && (
+      <div className="mt-4 rounded-2xl bg-slate-100 px-4 py-3 text-sm leading-7 text-slate-700">
+        {analysisMessage}
+      </div>
+    )}
+
+    <div className="mt-5 flex flex-wrap gap-3">
+      <button
+        onClick={handleGenerateAnalysis}
+        disabled={analyzing}
+        className="rounded-2xl bg-orange-500 px-5 py-3 font-black text-white disabled:opacity-50"
+      >
+        {analyzing ? "分析中..." : "產生整體分析與角色報告"}
+      </button>
+
+      <button
+        onClick={() => (window.location.href = "/map")}
+        className="rounded-2xl bg-slate-900 px-5 py-3 font-black text-white"
+      >
+        前往角色報告地圖
+      </button>
+    </div>
+  </section>
+)}
       </div>
     </main>
   );
