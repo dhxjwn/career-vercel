@@ -61,6 +61,62 @@ function ResourceList({
   );
 }
 
+function ExternalLinksSection({ jobName }: { jobName: string }) {
+  const keyword = encodeURIComponent(jobName);
+
+  const links = [
+    {
+      name: "Hahow",
+      desc: `搜尋「${jobName}」相關線上課程`,
+      url: `https://hahow.in/search?query=${keyword}`,
+    },
+    {
+      name: "Coursera",
+      desc: `搜尋「${jobName}」相關國際課程`,
+      url: `https://www.coursera.org/search?query=${keyword}`,
+    },
+    {
+      name: "YouTube",
+      desc: `搜尋「${jobName}」教學影片`,
+      url: `https://www.youtube.com/results?search_query=${keyword}%20教學`,
+    },
+    {
+      name: "104",
+      desc: `搜尋「${jobName}」相關職缺`,
+      url: `https://www.104.com.tw/jobs/search/?keyword=${keyword}`,
+    },
+  ];
+
+  return (
+    <section className="rounded-3xl bg-white p-6 shadow-sm">
+      <h2 className="text-xl font-black">🔗 外部學習與職缺連結</h2>
+
+      <p className="mt-2 text-sm leading-6 text-slate-500">
+        依照目前選擇的職業，自動整理可延伸查詢的課程、影片與職缺資源。
+      </p>
+
+      <div className="mt-5 grid gap-3">
+        {links.map((link) => (
+          <a
+            key={link.name}
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-orange-300 hover:bg-orange-50"
+          >
+            <div>
+              <div className="font-black text-orange-600">{link.name}</div>
+              <div className="mt-1 text-sm text-slate-600">{link.desc}</div>
+            </div>
+
+            <div className="shrink-0 text-lg">↗</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function getReadinessStage(avgScore: number) {
   if (avgScore < 3) {
     return {
@@ -816,6 +872,7 @@ async function handleSendChat() {
                       title="🏫 職涯中心資源"
                       items={selectedJob.career_center_resources}
                     />
+                    <ExternalLinksSection jobName={selectedJob.job_name} />
                   </div>
                 </section>
                 <JobChatSection
