@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function LoginPage() {
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +21,11 @@ export default function LoginPage() {
 
     try {
       const endpoint =
-        mode === "login" ? "/api/auth/login" : "/api/auth/register";
+  mode === "login"
+    ? "/api/auth/login"
+    : mode === "register"
+    ? "/api/auth/register"
+    : "/api/auth/reset-password";
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -41,10 +45,17 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem("student_id", data.student_id);
       setMessage(data.message || "成功。");
 
-      window.location.href = "/";
+if (mode === "reset") {
+  setMode("login");
+  setPassword("");
+  return;
+}
+
+localStorage.setItem("student_id", data.student_id);
+window.location.href = "/";
+
     } catch (err) {
       setMessage("系統發生錯誤，請稍後再試。");
     } finally {
@@ -109,15 +120,45 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold">密碼</label>
+              <label className="mb-2 block text-sm font-bold">
+  {mode === "reset" ? "新密碼" : "密碼"}
+</label>
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
-                placeholder="請輸入密碼"
+                placeholder={mode === "reset" ? "請輸入新密碼" : "請輸入密碼"}
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-orange-400"
               />
             </div>
+
+            <div className="flex justify-end">
+  {mode === "login" ? (
+    <button
+      type="button"
+      onClick={() => {
+        setMode("reset");
+        setMessage("");
+        setPassword("");
+      }}
+      className="text-sm font-bold text-orange-600 hover:text-orange-700"
+    >
+      忘記密碼？
+    </button>
+  ) : mode === "reset" ? (
+    <button
+      type="button"
+      onClick={() => {
+        setMode("login");
+        setMessage("");
+        setPassword("");
+      }}
+      className="text-sm font-bold text-slate-500 hover:text-slate-700"
+    >
+      返回登入
+    </button>
+  ) : null}
+</div>
 
             {message && (
               <div className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
@@ -131,15 +172,19 @@ export default function LoginPage() {
               className="w-full rounded-2xl bg-orange-500 py-3 font-black text-white shadow-sm transition hover:bg-orange-600 disabled:opacity-50"
             >
               {loading
-                ? "處理中..."
-                : mode === "login"
-                ? "登入"
-                : "註冊"}
+  ? "處理中..."
+  : mode === "login"
+  ? "登入"
+  : mode === "register"
+  ? "註冊"
+  : "重設密碼"}
             </button>
           </div>
 
           <p className="mt-6 text-center text-xs leading-6 text-slate-400">
-            登入後會進入職涯探索主畫面。
+            {mode === "reset"
+  ? "重設後請使用新密碼重新登入。"
+  : "登入後會進入職涯探索主畫面。"}
           </p>
         </div>
       </div>
