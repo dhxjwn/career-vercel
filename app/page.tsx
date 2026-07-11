@@ -1,5 +1,5 @@
 "use client";
-
+import FloatingUserMenu from "./components/FloatingUserMenu";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
@@ -60,6 +60,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10 text-slate-900">
+      <FloatingUserMenu studentId={studentId} afterResetHref="/chat" />
       <div className="mx-auto max-w-5xl space-y-8">
         <section className="rounded-3xl bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -73,21 +74,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-  <button
-    onClick={handleResetUser}
-    className="rounded-2xl border border-orange-200 bg-white px-5 py-3 font-black text-orange-600 transition hover:bg-orange-50"
-  >
-    🔁 重新調配
-  </button>
-
-  <button
-    onClick={handleLogout}
-    className="rounded-2xl bg-slate-900 px-5 py-3 font-black text-white"
-  >
-    登出
-  </button>
-</div>
           </div>
         </section>
 

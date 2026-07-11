@@ -1,5 +1,5 @@
 "use client";
-
+import FloatingUserMenu from "../components/FloatingUserMenu";
 import { useEffect, useMemo, useState } from "react";
 
 type JobPlan = {
@@ -727,6 +727,7 @@ async function handleSendChat() {
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-8 text-slate-900">
+      <FloatingUserMenu studentId={studentId} afterResetHref="/chat" />
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-center justify-between rounded-3xl bg-white p-5 shadow-sm">
           <div>
@@ -761,7 +762,7 @@ async function handleSendChat() {
 
         {jobs.length > 0 && (
           <>
-            <div className="mb-5 grid gap-3 md:grid-cols-3">
+            <div className="sticky top-20 z-40 mb-5 grid gap-3 rounded-3xl bg-slate-100/95 p-2 shadow-sm backdrop-blur md:grid-cols-3">
               {jobs.map((job, index) => (
                 <button
                   key={job.job_name}

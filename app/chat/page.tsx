@@ -1,5 +1,5 @@
 "use client";
-
+import FloatingUserMenu from "../components/FloatingUserMenu";
 import { useEffect, useMemo, useState } from "react";
 
 type ChatMessage = {
@@ -232,6 +232,7 @@ setAnalysisJobs(data.jobs || []);
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10 text-slate-900">
+      <FloatingUserMenu studentId={studentId} afterResetHref="/chat" />
       <div className="mx-auto max-w-5xl space-y-6">
         <section className="rounded-3xl bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between gap-3">
@@ -251,7 +252,7 @@ setAnalysisJobs(data.jobs || []);
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="sticky top-4 z-40 grid gap-4 rounded-3xl bg-slate-100/95 p-2 shadow-sm backdrop-blur md:grid-cols-3">
           {TOPICS.map((topic) => {
             const percent = getTopicPercent(progress, topic.id);
             const locked = topic.id > progress.unlocked_topic;
