@@ -252,45 +252,48 @@ setAnalysisJobs(data.jobs || []);
           </div>
         </section>
 
-        <section className="sticky top-4 z-40 grid gap-4 rounded-3xl bg-slate-100/95 p-2 shadow-sm backdrop-blur md:grid-cols-3">
-          {TOPICS.map((topic) => {
-            const percent = getTopicPercent(progress, topic.id);
-            const locked = topic.id > progress.unlocked_topic;
-            const active = topic.id === currentTopic;
+        <section className="sticky top-2 z-40 rounded-2xl bg-slate-100/95 p-2 shadow-sm backdrop-blur md:top-4 md:rounded-3xl">
+  <div className="flex gap-2 overflow-x-auto md:grid md:grid-cols-3 md:gap-4">
+    {TOPICS.map((topic) => {
+      const percent = getTopicPercent(progress, topic.id);
+      const locked = topic.id > progress.unlocked_topic;
+      const active = topic.id === currentTopic;
 
-            return (
-              <button
-                key={topic.id}
-                onClick={() => handleTopicClick(topic.id)}
-                className={`rounded-3xl p-5 text-left shadow-sm transition ${
-                  active
-                    ? "bg-orange-500 text-white"
-                    : locked
-                    ? "bg-slate-200 text-slate-400"
-                    : "bg-white text-slate-900"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-lg font-black">
-                    {locked ? "🔒 " : percent >= 100 ? "✅ " : ""}
-                    {topic.title}
-                  </div>
-                  <div className="rounded-full bg-black/10 px-3 py-1 text-xs font-black">
-                    {percent}%
-                  </div>
-                </div>
+      return (
+        <button
+          key={topic.id}
+          onClick={() => handleTopicClick(topic.id)}
+          className={`min-w-[118px] shrink-0 rounded-xl px-3 py-3 text-left shadow-sm transition md:min-w-0 md:rounded-3xl md:p-5 ${
+            active
+              ? "bg-orange-500 text-white"
+              : locked
+              ? "bg-slate-200 text-slate-400"
+              : "bg-white text-slate-900"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="truncate text-sm font-black md:text-lg">
+              {locked ? "🔒 " : percent >= 100 ? "✅ " : ""}
+              {topic.title.replace("探索", "")}
+            </div>
 
-                <p
-                  className={`mt-3 text-sm leading-6 ${
-                    active ? "text-white/90" : "text-slate-500"
-                  }`}
-                >
-                  {topic.desc}
-                </p>
-              </button>
-            );
-          })}
-        </section>
+            <div className="shrink-0 rounded-full bg-black/10 px-2 py-1 text-[11px] font-black md:px-3 md:text-xs">
+              {percent}%
+            </div>
+          </div>
+
+          <p
+            className={`mt-2 hidden text-sm leading-6 md:block ${
+              active ? "text-white/90" : "text-slate-500"
+            }`}
+          >
+            {topic.desc}
+          </p>
+        </button>
+      );
+    })}
+  </div>
+</section>
 
         {message && (
           <section className="rounded-2xl bg-yellow-50 px-5 py-4 text-sm font-bold text-yellow-800">
